@@ -29,17 +29,17 @@ Jam has a very simple API.
 Constructor
 
 new Jam({
-   template: <component template>,
-   data: <inital data>,
-   selector: <DOM selector>,
-   kids: [<Jams>]
+   template: component template,
+   data: inital data,
+   selector: DOM selector,
+   kids: [Jams]
 })
 
 Methods
 
 render()
 
-update(<new data>)
+update(new data)
 
 ### Docs
 
@@ -111,7 +111,7 @@ const main = function () {
    }, 1000);
 
 
-   // This is out AJAX request for this file :)
+   // This is an AJAX request for this file :)
    const xhr = new XMLHttpRequest();
    xhr.addEventListener('load', function () {
       if (xhr.status === 200) {
