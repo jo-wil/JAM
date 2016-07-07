@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "./build/",
+        "target": "es5",
+        "sourceMap": true,
+        "noImplicitAny": true
+    },
+    "files": [
+       "./src/jam.ts",
+       "./src/app.ts"
+    ]
+}
