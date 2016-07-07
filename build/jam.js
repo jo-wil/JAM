@@ -68,19 +68,15 @@ var Jam = (function () {
             var domNode = domNodesArray[i];
             var shadowNode = shadowNodesArray[i];
             if (domNode === undefined) {
-                console.log('Appending Node', shadowNode);
                 dom.appendChild(shadowNode);
             }
             else if (shadowNode === undefined) {
-                console.log('Removing Node', domNode);
                 dom.removeChild(domNode);
             }
             else if (this._changed(domNode, shadowNode) === true) {
-                console.log('Replacing Node', shadowNode, domNode);
                 dom.replaceChild(shadowNode, domNode);
             }
             else {
-                console.log('Recursing on Node', domNode);
                 this._renderDom(domNode, domNode.childNodes, shadowNode.childNodes);
             }
         }
