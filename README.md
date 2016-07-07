@@ -14,10 +14,11 @@ If you want to build Jam you can fork the repo and run
 tsc
 ```
 
-This will build the Typescript file to a vailla Javascript one. 
+This will build the Typescript file to a vanilla Javascript one
+that targets ES5.
 
-If you just want to use Jam, you only need to copy the jam.js 
-file from the build directory to your local working directory.
+If you just want to use Jam, you only need to copy the prebuilt 
+jam.js file from the build directory to your local working directory.
 
 This file injects a Jam variable into the global scope that has
 all the functionality of the tool.
@@ -30,10 +31,10 @@ Constructor
 
 ```javascript
 new Jam({
-   template: component template,
-   data: inital data,
-   selector: DOM selector,
-   kids: [Jams]
+   template: <component template>: string,
+   data: <inital data>: Object,
+   selector: <DOM selector>: string,
+   kids: [<Jams>]: Array<Jam>
 })
 ```
 
@@ -45,7 +46,7 @@ render()
 This function renders your component and all kids recursively, this should only need to be called once for the top level components at app start.
 
 ```
-update(new data)
+update(<new data>: Object)
 ```
 This function triggers an update to your component, internally render is called to update the DOM.
 
