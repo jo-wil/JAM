@@ -1,6 +1,6 @@
 # JAM.js
 
-JAM is a javascript tools for building web applications.
+JAM is a javascript tool for building web applications.
 
 JAM provides automatic DOM updates when your data changes.
 
@@ -28,18 +28,26 @@ Jam has a very simple API.
 
 Constructor
 
+```javascript
 new Jam({
    template: component template,
    data: inital data,
    selector: DOM selector,
    kids: [Jams]
 })
+```
 
 Methods
 
+```
 render()
+```
+This function renders your component and all kids recursively, this should only need to be called once for the top level components at app start.
 
+```
 update(new data)
+```
+This function triggers an update to your component, internally render is called to update the DOM.
 
 ### Docs
 
