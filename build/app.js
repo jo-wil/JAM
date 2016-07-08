@@ -18,11 +18,17 @@ var main = function () {
         selector: '#timer',
         kids: []
     });
+    var color = new Jam({
+        template: "<p style=\"color:<%-data.color%>\"> This text changes colors WOW! </p>",
+        data: { color: 'red' },
+        selector: '#color',
+        kids: []
+    });
     var container = new Jam({
-        template: "<h2>JAM.js Demo App</h2>\n          <div id=\"timer\"></div>\n          <div id=\"echo\"></div>",
+        template: "<h2>JAM.js Demo App</h2>\n          <div id=\"timer\"></div>\n          <div id=\"color\"></div>\n          <div id=\"echo\"></div>",
         data: {},
         selector: '#container',
-        kids: [timer, echo]
+        kids: [timer, color, echo]
     });
     container.render();
     document.querySelector('#message').addEventListener('input', function (evt) {
@@ -31,6 +37,12 @@ var main = function () {
     window.setInterval(function () {
         timer.update({ time: new Date() });
     }, 1000);
+    var selected = 0;
+    var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+    window.setInterval(function () {
+        selected = (selected + 1) % colors.length;
+        color.update({ color: colors[selected] });
+    }, 2000);
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', function () {
         if (xhr.status === 200) {

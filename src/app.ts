@@ -28,14 +28,22 @@ const main = function () {
       kids: []
    });
 
+   const color = new Jam({
+      template: `<p style="color:<%-data.color%>"> This text changes colors WOW! </p>`,
+      data: {color: 'red'},
+      selector: '#color',
+      kids: []
+   });
+
    const container = new Jam({
       template:
          `<h2>JAM.js Demo App</h2>
           <div id="timer"></div>
+          <div id="color"></div>
           <div id="echo"></div>`,
       data: {},
       selector: '#container',
-      kids: [timer, echo] 
+      kids: [timer, color, echo] 
    });
  
    container.render();
@@ -48,6 +56,12 @@ const main = function () {
       timer.update({time: new Date()});
    }, 1000);
 
+   let selected = 0;
+   const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+   window.setInterval(function () {
+      selected = (selected + 1) % colors.length;
+      color.update({color: colors[selected]});
+   }, 2000);
 
    const xhr = new XMLHttpRequest();
    xhr.addEventListener('load', function () {

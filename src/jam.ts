@@ -103,7 +103,7 @@ class Jam {
             dom.appendChild(shadowNode);
          } else if (shadowNode === undefined) {
             dom.removeChild(domNode);
-         } else if (this._changed(domNode, shadowNode) === true) { 
+         } else if (this._changed(<Element>domNode, <Element>shadowNode) === true) { 
             dom.replaceChild(shadowNode, domNode);
          } else {
             this._renderDom(domNode, domNode.childNodes, shadowNode.childNodes);
@@ -111,7 +111,7 @@ class Jam {
       }
    }
 
-   _changed (d1: Node, d2: Node): boolean {
+   _changed (d1: Element, d2: Element): boolean {
       if (d1.nodeType !== d2.nodeType) {
          return true;
       }
@@ -122,7 +122,23 @@ class Jam {
       if (d1.nodeName !== d2.nodeName) {
          return true;
       }
-      // TODO more checks for eqaulity
+      const d1Attributes = d1.attributes;     
+      const d2Attributes = d2.attributes;
+      if (d1Attributes && d2Attributes) {
+         for (let i = 0; i < d1Attributes.length; i++) {
+            const d1Attribute = d1Attributes[i];
+            const d2Attribute = d2Attributes.getNamedItem(d1Attribute.name);
+            if (d1Attribute.value !== d2Attribute.value) {
+               return true;
+            }
+         }     
+      }
+      if (d1Attributes && !d2Attributes) {
+         return true;
+      } 
+      if (!d1Attributes && d2Attributes) {
+         return true;
+      } 
       return false;
    }
 

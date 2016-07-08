@@ -92,7 +92,23 @@ var Jam = (function () {
         if (d1.nodeName !== d2.nodeName) {
             return true;
         }
-        // TODO more checks for eqaulity
+        var d1Attributes = d1.attributes;
+        var d2Attributes = d2.attributes;
+        if (d1Attributes && d2Attributes) {
+            for (var i = 0; i < d1Attributes.length; i++) {
+                var d1Attribute = d1Attributes[i];
+                var d2Attribute = d2Attributes.getNamedItem(d1Attribute.name);
+                if (d1Attribute.value !== d2Attribute.value) {
+                    return true;
+                }
+            }
+        }
+        if (d1Attributes && !d2Attributes) {
+            return true;
+        }
+        if (!d1Attributes && d2Attributes) {
+            return true;
+        }
         return false;
     };
     Jam.prototype._clean = function (node) {
