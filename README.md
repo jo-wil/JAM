@@ -1,4 +1,4 @@
-
+# JAM.js
 
 JAM is a javascript tool for building web applications.
 
