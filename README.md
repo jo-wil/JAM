@@ -63,7 +63,7 @@ There is a full example in the repo that is called app.ts.
 // This is a simple app
 const app = new Jam({
    template: `<p><%- data.message %></p>`, // This is the template, JAM uses a tempalating language that is syntactically the same as _.js
-   data: {message: 'Hello JAM!'} // This is the inital data for rendering
+   data: {message: 'Hello JAM!'}, // This is the inital data for rendering
    selector: '#container', // This is used in the document.querySelector() method call to find out where to put you app
    kids: [] // This is and array for child containers
 });
