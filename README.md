@@ -1,6 +1,6 @@
 # JAM.js
 
-JAM is a javascript tool for building web applications.
+JAM is a javascript library for building web applications.
 
 JAM provides automatic DOM updates when your data changes.
 
