@@ -8,7 +8,7 @@ JAM is written in Typescript and has no dependecies.
 
 ### Installation
 
-If you want to build Jam you can fork the repo and run 
+If you want to build JAM you can fork the repo and run 
 
 ```
 tsc
@@ -17,15 +17,15 @@ tsc
 This will build the Typescript file to a vanilla Javascript one
 that targets ES5.
 
-If you just want to use Jam, you only need to copy the prebuilt 
+If you just want to use JAM, you only need to copy the prebuilt 
 jam.js file from the build directory to your local working directory.
 
 This file injects a Jam variable into the global scope that has
-all the functionality of the tool.
+all the functionality of the library.
 
 ### API
 
-Jam has a very simple API.
+JAM has a very simple API.
 
 Constructor
 
