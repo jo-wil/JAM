@@ -24,11 +24,17 @@ var main = function () {
         selector: '#color',
         kids: []
     });
+    var cascade = new Jam({
+        template: "<p> <%- data.inherited %>, <%- data.not %>",
+        data: { not: 'this didnt come from the parent' },
+        selector: '#cascade',
+        kids: []
+    });
     var container = new Jam({
-        template: "<h2>JAM.js Demo App</h2>\n          <div id=\"timer\"></div>\n          <div id=\"color\"></div>\n          <div id=\"echo\"></div>",
-        data: {},
+        template: "<h2>JAM.js Demo App</h2>\n          <div id=\"timer\"></div>\n          <div id=\"color\"></div>\n          <div id=\"echo\"></div>\n          <div id=\"cascade\"></div>",
+        data: { inherited: 'this came from the parent', not: 'this should NOT be here' },
         selector: '#container',
-        kids: [timer, color, echo]
+        kids: [timer, color, echo, cascade]
     });
     container.render();
     document.querySelector('#message').addEventListener('input', function (evt) {

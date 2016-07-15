@@ -15,34 +15,26 @@ var Jam = (function () {
         var shadow = document.createRange().createContextualFragment(this._renderTemplate(template, data));
         dom.normalize();
         this._clean(dom);
-        this._renderKids(shadow, kids);
+        this._renderKids(shadow, data, kids);
         shadow.normalize();
         this._clean(shadow);
         this._renderDom(dom, dom.childNodes, shadow.childNodes);
     };
-    Jam.prototype.update = function (data) {
-        for (var key in data) {
-            this._data[key] = data[key];
-        }
+    Jam.prototype.update = function (newData) {
+        this._data = this._copy({}, [this._data, newData]);
         this.render();
         return this._data;
     };
-    Jam.prototype._renderKids = function (shadow, kids) {
+    Jam.prototype._renderKids = function (shadow, parentData, kids) {
         for (var i = 0; i < kids.length; i++) {
             var kid = kids[i];
-            var kidShadow = document.createRange().createContextualFragment(this._renderTemplate(kid._template, kid._data));
-            shadow.querySelector(kid._selector)
-                .appendChild(kidShadow);
-            this._renderKids(shadow, kid._kids);
+            var combinedData = this._copy({}, [parentData, kid._data]);
+            var kidShadow = document.createRange().createContextualFragment(this._renderTemplate(kid._template, combinedData));
+            shadow.querySelector(kid._selector).appendChild(kidShadow);
+            this._renderKids(shadow, combinedData, kid._kids);
         }
     };
     Jam.prototype._renderTemplate = function (template, data) {
-        var _escape = function (html) {
-            var tmp = document.createElement('div');
-            tmp.appendChild(document.createTextNode(html));
-            var escaped = tmp.innerHTML;
-            return escaped;
-        };
         var interpolate = /<%=([\s\S]+?)%>/g;
         var escape = /<%-([\s\S]+?)%>/g;
         var evaluate = /<%([\s\S]+?)%>/g;
@@ -55,10 +47,7 @@ var Jam = (function () {
         f += "str +='" + template + "';\n";
         f += "return str;\n";
         var func = new Function('data', f);
-        var scope = {
-            _escape: _escape
-        };
-        var html = func.call(scope, data);
+        var html = func.call(this, data);
         return html;
     };
     Jam.prototype._renderDom = function (dom, domNodes, shadowNodes) {
@@ -111,6 +100,12 @@ var Jam = (function () {
         }
         return false;
     };
+    Jam.prototype._escape = function (html) {
+        var tmp = document.createElement('div');
+        tmp.appendChild(document.createTextNode(html));
+        var escaped = tmp.innerHTML;
+        return escaped;
+    };
     Jam.prototype._clean = function (node) {
         for (var i = 0; i < node.childNodes.length; i++) {
             var child = node.childNodes[i];
@@ -123,6 +118,15 @@ var Jam = (function () {
                 this._clean(child);
             }
         }
+    };
+    Jam.prototype._copy = function (to, from) {
+        for (var i = 0; i < from.length; i++) {
+            var object = from[i];
+            for (var key in object) {
+                to[key] = object[key];
+            }
+        }
+        return to;
     };
     return Jam;
 }());
