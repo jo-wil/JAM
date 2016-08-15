@@ -4,35 +4,26 @@ var Jam = (function () {
         this._template = options.template;
         this._data = options.data;
         this._selector = options.selector;
-        this._kids = options.kids;
+        this._functions = options.functions;
     }
     Jam.prototype.render = function () {
+        console.log('rendering ' + new Date());
         var template = this._template;
         var data = this._data;
         var selector = this._selector;
-        var kids = this._kids;
         var dom = document.querySelector(selector);
         var shadow = document.createRange().createContextualFragment(this._renderTemplate(template, data));
         dom.normalize();
         this._clean(dom);
-        this._renderKids(shadow, data, kids);
         shadow.normalize();
         this._clean(shadow);
         this._renderDom(dom, dom.childNodes, shadow.childNodes);
     };
     Jam.prototype.update = function (newData) {
         this._data = this._copy({}, [this._data, newData]);
+        console.log('updating ' + new Date());
         this.render();
         return this._data;
-    };
-    Jam.prototype._renderKids = function (shadow, parentData, kids) {
-        for (var i = 0; i < kids.length; i++) {
-            var kid = kids[i];
-            var combinedData = this._copy({}, [parentData, kid._data]);
-            var kidShadow = document.createRange().createContextualFragment(this._renderTemplate(kid._template, combinedData));
-            shadow.querySelector(kid._selector).appendChild(kidShadow);
-            this._renderKids(shadow, combinedData, kid._kids);
-        }
     };
     Jam.prototype._renderTemplate = function (template, data) {
         var interpolate = /<%=([\s\S]+?)%>/g;
@@ -57,12 +48,14 @@ var Jam = (function () {
             var domNode = domNodesArray[i];
             var shadowNode = shadowNodesArray[i];
             if (domNode === undefined) {
+                this._listen(shadowNode);
                 dom.appendChild(shadowNode);
             }
             else if (shadowNode === undefined) {
                 dom.removeChild(domNode);
             }
             else if (this._changed(domNode, shadowNode) === true) {
+                this._listen(shadowNode);
                 dom.replaceChild(shadowNode, domNode);
             }
             else {
@@ -100,17 +93,28 @@ var Jam = (function () {
         }
         return false;
     };
-    Jam.prototype._escape = function (html) {
-        var tmp = document.createElement('div');
-        tmp.appendChild(document.createTextNode(html));
-        var escaped = tmp.innerHTML;
-        return escaped;
+    Jam.prototype._listen = function (node) {
+        var attributes = node.attributes;
+        if (!attributes) {
+            return;
+        }
+        for (var i = 0; i < attributes.length; i++) {
+            console.log(attributes[i]);
+            var attribute = attributes[i];
+            if (attribute.name.indexOf('on') != -1) {
+                console.log(attribute.name, attribute.value);
+                node.removeAttribute(attribute.name);
+                var evt = attribute.name.replace('on', '');
+                var func = attribute.value;
+                node.addEventListener(evt, this._functions[func].bind(this), false);
+            }
+        }
     };
     Jam.prototype._clean = function (node) {
         for (var i = 0; i < node.childNodes.length; i++) {
             var child = node.childNodes[i];
             if ((child.nodeType === 8) ||
-                (child.nodeType === 3 && /^\s*$/.test(child.nodeValue))) {
+                (child.nodeType === 3 && /^\s*$/.test(child.nodeValue || ''))) {
                 node.removeChild(child);
                 i--;
             }
@@ -118,6 +122,12 @@ var Jam = (function () {
                 this._clean(child);
             }
         }
+    };
+    Jam.prototype._escape = function (html) {
+        var tmp = document.createElement('div');
+        tmp.appendChild(document.createTextNode(html));
+        var escaped = tmp.innerHTML;
+        return escaped;
     };
     Jam.prototype._copy = function (to, from) {
         for (var i = 0; i < from.length; i++) {
