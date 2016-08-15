@@ -2,7 +2,8 @@
 
 JAM is a javascript library for building web applications.
 
-JAM provides automatic DOM updates when your data changes.
+JAM provides automatic DOM updates when your data changes as 
+well as handling event listeners.
 
 JAM is written in Typescript and has no dependecies.
 
@@ -34,7 +35,7 @@ new Jam({
    template: <component template>: string,
    data: <inital data>: Object,
    selector: <DOM selector>: string,
-   kids: [<Jams>]: Array<Jam>
+   functions: [<listeners>]: Array<Function>
 })
 ```
 
@@ -43,12 +44,12 @@ Methods
 ```
 render()
 ```
-This function renders your component and all kids recursively, this should only need to be called once for the top level components at app start.
+This function renders your component, this should only need to be called once at app start.
 
 ```
 update(<new data>: Object)
 ```
-This function triggers an update to your component, internally render is called to update the DOM.
+This function triggers an update to your component.
 
 ### Docs
 
@@ -56,22 +57,24 @@ Coming soon ...
 
 ### Example
 
-There is a full example in the repo that is called app.ts.
+There is a full example in the build folder that is called app.js.
 
 ```javascript
-
 // This is a simple app
 const app = new Jam({
-   template: `<p><%- data.message %></p>`, // This is the template, JAM uses a tempalating language that is syntactically the same as _.js
-   data: {message: 'Hello JAM!'}, // This is the inital data for rendering
+   template: `
+      <p><%- data.message %></p>
+      <button onclick="clickHandler"> Click Me! </button>     
+   `, // This is the template, JAM uses a tempalating language that is syntactically the same as _.js
+   data: {message: 'Hello from JAM!'}, // This is the inital data for rendering
    selector: '#container', // This is used in the document.querySelector() method call to find out where to put you app
-   kids: [] // This is and array for child containers
+   functions: {
+      clickHandler: function (evt) { // this is used as an event handler for the onclick of the button
+         this.update({message: `${this._data.message} I have changed`}); // The scope of the function is the Jam instance itself
+      }
+   }
 });
 
 // This is the inital DOM rendering so make sure this is called after the DOM is loaded
 app.render();
-
-// This can be called whenever you want the message to change and the DOM will reflect the changes
-app.update({message: getMessageFromSomewhereCool()});
-
 ```
