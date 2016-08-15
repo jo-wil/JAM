@@ -8,7 +8,6 @@
         "strictNullChecks": true
     },
     "files": [
-       "./src/jam.ts",
-       "./src/app.ts"
+       "./src/jam.ts"
     ]
 }

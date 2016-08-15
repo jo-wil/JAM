@@ -7,7 +7,14 @@ var Jam = (function () {
         this._functions = options.functions;
     }
     Jam.prototype.render = function () {
-        console.log('rendering ' + new Date());
+        this._render();
+    };
+    Jam.prototype.update = function (newData) {
+        this._data = this._copy({}, [this._data, newData]);
+        this._render();
+        return this._data;
+    };
+    Jam.prototype._render = function () {
         var template = this._template;
         var data = this._data;
         var selector = this._selector;
@@ -18,12 +25,6 @@ var Jam = (function () {
         shadow.normalize();
         this._clean(shadow);
         this._renderDom(dom, dom.childNodes, shadow.childNodes);
-    };
-    Jam.prototype.update = function (newData) {
-        this._data = this._copy({}, [this._data, newData]);
-        console.log('updating ' + new Date());
-        this.render();
-        return this._data;
     };
     Jam.prototype._renderTemplate = function (template, data) {
         var interpolate = /<%=([\s\S]+?)%>/g;
@@ -99,10 +100,8 @@ var Jam = (function () {
             return;
         }
         for (var i = 0; i < attributes.length; i++) {
-            console.log(attributes[i]);
             var attribute = attributes[i];
             if (attribute.name.indexOf('on') != -1) {
-                console.log(attribute.name, attribute.value);
                 node.removeAttribute(attribute.name);
                 var evt = attribute.name.replace('on', '');
                 var func = attribute.value;
@@ -113,8 +112,9 @@ var Jam = (function () {
     Jam.prototype._clean = function (node) {
         for (var i = 0; i < node.childNodes.length; i++) {
             var child = node.childNodes[i];
-            if ((child.nodeType === 8) ||
-                (child.nodeType === 3 && /^\s*$/.test(child.nodeValue || ''))) {
+            if ((child.nodeValue === null) ||
+                (child.nodeType === 8) ||
+                (child.nodeType === 3 && /^\s*$/.test(child.nodeValue))) {
                 node.removeChild(child);
                 i--;
             }

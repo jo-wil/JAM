@@ -31,13 +31,11 @@ class Jam {
 
    update (newData: TypedObject) : TypedObject {
       this._data = this._copy({}, [this._data, newData]);
-      console.log('updating ' + new Date());
       this._render();
       return this._data;
    }
 
    _render (): void {
-      console.log('rendering ' + new Date());
       const template: string = this._template; 
       const data: TypedObject = this._data; 
       const selector: string = this._selector;
@@ -132,10 +130,8 @@ class Jam {
          return;
       }
       for (let i = 0; i < attributes.length; i++) {
-         console.log(attributes[i]);
          const attribute = attributes[i];
          if (attribute.name.indexOf('on') != -1) {
-            console.log(attribute.name, attribute.value);
             (<Element>node).removeAttribute(attribute.name);
             const evt = attribute.name.replace('on', '');
             const func = attribute.value;
@@ -147,8 +143,9 @@ class Jam {
    _clean (node: Node): void {
       for(let i = 0; i < node.childNodes.length; i++) {
          const child: Node = node.childNodes[i];
-         if ((child.nodeType === 8) || 
-             (child.nodeType === 3 && /^\s*$/.test(child.nodeValue || ''))) {
+         if ((child.nodeValue === null) ||
+             (child.nodeType === 8) || 
+             (child.nodeType === 3 && /^\s*$/.test(child.nodeValue))) {
             node.removeChild(child);
             i--;
          } else if(child.nodeType === 1) {
