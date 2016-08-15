@@ -6,6 +6,20 @@ var Jam = (function () {
         this._selector = options.selector;
         this._functions = options.functions;
     }
+    Object.defineProperty(Jam.prototype, "data", {
+        get: function () {
+            return this._data;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Jam.prototype, "functions", {
+        get: function () {
+            return this._functions;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Jam.prototype.render = function () {
         this._render();
     };
@@ -16,30 +30,29 @@ var Jam = (function () {
     };
     Jam.prototype._render = function () {
         var template = this._template;
-        var data = this._data;
         var selector = this._selector;
         var dom = document.querySelector(selector);
-        var shadow = document.createRange().createContextualFragment(this._renderTemplate(template, data));
+        var shadow = document.createRange().createContextualFragment(this._renderTemplate(template));
         dom.normalize();
         this._clean(dom);
         shadow.normalize();
         this._clean(shadow);
         this._renderDom(dom, dom.childNodes, shadow.childNodes);
     };
-    Jam.prototype._renderTemplate = function (template, data) {
+    Jam.prototype._renderTemplate = function (template) {
         var interpolate = /<%=([\s\S]+?)%>/g;
         var escape = /<%-([\s\S]+?)%>/g;
         var evaluate = /<%([\s\S]+?)%>/g;
         var f = "";
         f += "var str = '';\n";
-        template = template.replace(/\n/g, '')
-            .replace(interpolate, "' + $1 + '")
-            .replace(escape, "' + this._escape($1) + '")
+        var renderedTemplate = template.replace(/\n/g, '')
+            .replace(interpolate, "' + this.data.$1 + '")
+            .replace(escape, "' + this._escape(this.data.$1) + '")
             .replace(evaluate, "'; $1 str += '");
-        f += "str +='" + template + "';\n";
+        f += "str +='" + renderedTemplate + "';\n";
         f += "return str;\n";
-        var func = new Function('data', f);
-        var html = func.call(this, data);
+        var func = new Function(f);
+        var html = func.call(this);
         return html;
     };
     Jam.prototype._renderDom = function (dom, domNodes, shadowNodes) {
@@ -112,9 +125,9 @@ var Jam = (function () {
     Jam.prototype._clean = function (node) {
         for (var i = 0; i < node.childNodes.length; i++) {
             var child = node.childNodes[i];
-            if ((child.nodeValue === null) ||
-                (child.nodeType === 8) ||
-                (child.nodeType === 3 && /^\s*$/.test(child.nodeValue))) {
+            if ((child.nodeType === 8) ||
+                (child.nodeType === 3 &&
+                    (child.nodeValue === null || /^\s*$/.test(child.nodeValue)))) {
                 node.removeChild(child);
                 i--;
             }

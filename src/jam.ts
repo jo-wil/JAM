@@ -25,6 +25,14 @@ class Jam {
       this._functions = options.functions;
    }
 
+   get data (): TypedObject {
+      return this._data;
+   }
+
+   get functions (): TypedObject {
+      return this._functions;
+   }
+
    render (): void {
       this._render();
    }
@@ -37,21 +45,20 @@ class Jam {
 
    _render (): void {
       const template: string = this._template; 
-      const data: TypedObject = this._data; 
       const selector: string = this._selector;
       const dom: Node = document.querySelector(selector);
-      const shadow: DocumentFragment = document.createRange().createContextualFragment(this._renderTemplate(template, data));
-      
+      const shadow: DocumentFragment = document.createRange().createContextualFragment(this._renderTemplate(template));
+     
       dom.normalize();
       this._clean(dom);
       
       shadow.normalize();
       this._clean(shadow);
-      
+     
       this._renderDom(dom, dom.childNodes, shadow.childNodes);
    }
 
-   _renderTemplate (template: string, data: TypedObject): string {
+   _renderTemplate (template: string): string {
      
       const interpolate: RegExp = /<%=([\s\S]+?)%>/g;
       const escape: RegExp = /<%-([\s\S]+?)%>/g;
@@ -60,15 +67,16 @@ class Jam {
       let f: string = "";
       f += "var str = '';\n";   
                      
-      template = template.replace(/\n/g, '')
-                         .replace(interpolate, "' + $1 + '") 
-                         .replace(escape, "' + this._escape($1) + '") 
-                         .replace(evaluate, "'; $1 str += '"); 
-      f += "str +='" + template + "';\n";
+      const renderedTemplate = template.replace(/\n/g, '')
+                               .replace(interpolate, "' + this.data.$1 + '") 
+                               .replace(escape, "' + this._escape(this.data.$1) + '") 
+                               .replace(evaluate, "'; $1 str += '"); 
+      f += "str +='" + renderedTemplate + "';\n";
       f += "return str;\n";
 
-      const func: any = new Function('data', f);
-      const html: string = func.call(this, data);
+      const func: any = new Function(f);
+
+      const html: string = func.call(this);
 
       return html; 
    }
@@ -143,9 +151,9 @@ class Jam {
    _clean (node: Node): void {
       for(let i = 0; i < node.childNodes.length; i++) {
          const child: Node = node.childNodes[i];
-         if ((child.nodeValue === null) ||
-             (child.nodeType === 8) || 
-             (child.nodeType === 3 && /^\s*$/.test(child.nodeValue))) {
+         if ((child.nodeType === 8) || 
+             (child.nodeType === 3 && 
+             (child.nodeValue === null || /^\s*$/.test(child.nodeValue)))) {
             node.removeChild(child);
             i--;
          } else if(child.nodeType === 1) {

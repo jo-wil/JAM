@@ -7,11 +7,11 @@ var main = function () {
          `<h2>JAM.js Demo App</h2>
           <button onclick="timer">Start</button>
           <button onclick="toggle">Toggle</button>
-          <p> <%- data.time %> </p>
-          <p style="color:<%-data.color%>"> This text changes colors WOW! </p>
-          <% if (data.toggle) { %>
-             <textarea oninput="echo" rows="10" cols="50"><%- data.echo %></textarea>
-             <p><%- data.echo %></p>
+          <p> <%- time %> </p>
+          <p style="color:<%- color %>"> This text changes colors WOW! </p>
+          <% if (this.data.toggle) { %>
+             <textarea oninput="echo" rows="10" cols="50"><%- echo %></textarea>
+             <p><%- echo %></p>
           <% } %>`,
       data: {time: new Date(), color: 'red', echo: '', toggle: false},
       selector: '#container',
@@ -25,7 +25,7 @@ var main = function () {
             }.bind(this), 1000);
          },
          toggle: function () {
-            if (this._data.toggle) {
+            if (this.data.toggle) {
                this.update({toggle: false});
             } else {
                this.update({toggle: true});
@@ -38,7 +38,6 @@ var main = function () {
    });
  
    container.render(); 
-
 };
 
 window.addEventListener('load', main);
