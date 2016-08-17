@@ -3,8 +3,8 @@
 var main = function () {
    
    var container = new Jam({
-      template:
-         `<h2>JAM.js Demo App</h2>
+      template:`
+          <h2>JAM.js Demo App</h2>
           <button onclick="timer">Start</button>
           <button onclick="toggle">Toggle</button>
           <p> <%- time %> </p>
@@ -12,8 +12,16 @@ var main = function () {
           <% if (this.data.toggle) { %>
              <textarea oninput="echo" rows="10" cols="50"><%- echo %></textarea>
              <p><%- echo %></p>
-          <% } %>`,
-      data: {time: new Date(), color: 'red', echo: '', toggle: false},
+          <% } %>
+          <h1> <%- deep.one %> <%- deep.two %> <%- deep.three %> </h1>
+      `,
+      data: {
+         time: new Date(), 
+         color: 'red', 
+         echo: '', 
+         toggle: false,
+         deep: {one: 1, two: 2, three: 3}
+      },
       selector: '#container',
       functions: {
          timer: function () {
@@ -25,11 +33,14 @@ var main = function () {
             }.bind(this), 1000);
          },
          toggle: function () {
+            console.log(this.data);
             if (this.data.toggle) {
                this.update({toggle: false});
             } else {
                this.update({toggle: true});
             }
+            this.update({deep:{ one: 11}});
+            console.log(this.data);
          },
          echo: function (evt) {
             this.update({echo: evt.target.value});

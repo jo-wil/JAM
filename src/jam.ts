@@ -38,7 +38,7 @@ class Jam {
    }
 
    update (newData: TypedObject) : TypedObject {
-      this._data = this._copy({}, [this._data, newData]);
+      this._data = this._merge(this._data, newData);
       this._render();
       return this._data;
    }
@@ -87,10 +87,10 @@ class Jam {
       for (let i = 0; i < Math.max(domNodesArray.length, shadowNodesArray.length); i++) {
          const domNode: Node = domNodesArray[i];
          const shadowNode: Node = shadowNodesArray[i];
-         if (domNode === undefined) {
+         if (!domNode) {
             this._listen(shadowNode);
             dom.appendChild(shadowNode);
-         } else if (shadowNode === undefined) {
+         } else if (!shadowNode) {
             dom.removeChild(domNode);
          } else if (this._changed(<Element>domNode, <Element>shadowNode) === true) { 
             this._listen(shadowNode);
@@ -115,9 +115,15 @@ class Jam {
       const d1Attributes: NamedNodeMap = d1.attributes;     
       const d2Attributes: NamedNodeMap = d2.attributes;
       if (d1Attributes && d2Attributes) {
-         for (let i = 0; i < d1Attributes.length; i++) {
+         for (let i = 0; i < Math.max(d1Attributes.length, d2Attributes.length); i++) {
             const d1Attribute: Attr = d1Attributes[i];
+            if (!d1Attribute) {
+               return true;
+            }
             const d2Attribute: Attr = d2Attributes.getNamedItem(d1Attribute.name);
+            if (!d2Attribute) {
+               return true;
+            }
             if (d1Attribute.value !== d2Attribute.value) {
                return true;
             }
@@ -169,13 +175,28 @@ class Jam {
       return escaped; 
    }
 
-   _copy (to: TypedObject, from: Array<TypedObject>) {
-      for (let i = 0; i < from.length; i++) {
-         const object = from[i];
-         for (let key in object) {
-            to[key] = object[key];
+   _merge (a: TypedObject, b: TypedObject) {
+      const c: TypedObject = {};
+      const aKeys = Object.keys(a);
+      for (let i = 0; i < aKeys.length; i++) {
+         const key = aKeys[i];
+         const value = a[key];
+         if (typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+            c[key] = this._merge(c[key] || {}, a[key]);
+         } else {
+            c[key] = a[key];
          }
       }
-      return to;
+      const bKeys = Object.keys(b);
+      for (let i = 0; i < bKeys.length; i++) {
+         const key = bKeys[i];
+         const value = b[key];
+         if (typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+            c[key] = this._merge(c[key] || {}, b[key]);
+         } else {
+            c[key] = b[key];
+         }
+      }
+      return c;
    }
 }

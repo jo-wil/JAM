@@ -24,7 +24,7 @@ var Jam = (function () {
         this._render();
     };
     Jam.prototype.update = function (newData) {
-        this._data = this._copy({}, [this._data, newData]);
+        this._data = this._merge(this._data, newData);
         this._render();
         return this._data;
     };
@@ -61,11 +61,11 @@ var Jam = (function () {
         for (var i = 0; i < Math.max(domNodesArray.length, shadowNodesArray.length); i++) {
             var domNode = domNodesArray[i];
             var shadowNode = shadowNodesArray[i];
-            if (domNode === undefined) {
+            if (!domNode) {
                 this._listen(shadowNode);
                 dom.appendChild(shadowNode);
             }
-            else if (shadowNode === undefined) {
+            else if (!shadowNode) {
                 dom.removeChild(domNode);
             }
             else if (this._changed(domNode, shadowNode) === true) {
@@ -91,9 +91,15 @@ var Jam = (function () {
         var d1Attributes = d1.attributes;
         var d2Attributes = d2.attributes;
         if (d1Attributes && d2Attributes) {
-            for (var i = 0; i < d1Attributes.length; i++) {
+            for (var i = 0; i < Math.max(d1Attributes.length, d2Attributes.length); i++) {
                 var d1Attribute = d1Attributes[i];
+                if (!d1Attribute) {
+                    return true;
+                }
                 var d2Attribute = d2Attributes.getNamedItem(d1Attribute.name);
+                if (!d2Attribute) {
+                    return true;
+                }
                 if (d1Attribute.value !== d2Attribute.value) {
                     return true;
                 }
@@ -142,14 +148,31 @@ var Jam = (function () {
         var escaped = tmp.innerHTML;
         return escaped;
     };
-    Jam.prototype._copy = function (to, from) {
-        for (var i = 0; i < from.length; i++) {
-            var object = from[i];
-            for (var key in object) {
-                to[key] = object[key];
+    Jam.prototype._merge = function (a, b) {
+        var c = {};
+        var aKeys = Object.keys(a);
+        for (var i = 0; i < aKeys.length; i++) {
+            var key = aKeys[i];
+            var value = a[key];
+            if (typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+                c[key] = this._merge(c[key] || {}, a[key]);
+            }
+            else {
+                c[key] = a[key];
             }
         }
-        return to;
+        var bKeys = Object.keys(b);
+        for (var i = 0; i < bKeys.length; i++) {
+            var key = bKeys[i];
+            var value = b[key];
+            if (typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+                c[key] = this._merge(c[key] || {}, b[key]);
+            }
+            else {
+                c[key] = b[key];
+            }
+        }
+        return c;
     };
     return Jam;
 }());
