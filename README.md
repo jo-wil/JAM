@@ -20,7 +20,7 @@ that targets ES5.
 
 Feel free to use Jam as a Typescript or Javascript library.
 
-If you want to use Typescript, place ./src/jam.ts in your the typescript 
+If you want to use Typescript, place ./src/jam.ts in the typescript 
 src folder of your application.
 
 If you want to use Javascript, you only need to copy the prebuilt 
