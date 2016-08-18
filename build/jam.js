@@ -48,7 +48,8 @@ var Jam = (function () {
         var renderedTemplate = template.replace(/\n/g, '')
             .replace(interpolate, "' + this.data.$1 + '")
             .replace(escape, "' + this._escape(this.data.$1) + '")
-            .replace(evaluate, "'; $1 str += '");
+            .replace(evaluate, "'; $1 str += '")
+            .replace(/this.data.\s/g, 'this.data.');
         f += "str +='" + renderedTemplate + "';\n";
         f += "return str;\n";
         var func = new Function(f);
@@ -61,15 +62,16 @@ var Jam = (function () {
         for (var i = 0; i < Math.max(domNodesArray.length, shadowNodesArray.length); i++) {
             var domNode = domNodesArray[i];
             var shadowNode = shadowNodesArray[i];
-            if (!domNode) {
+            if (shadowNode) {
                 this._listen(shadowNode);
+            }
+            if (!domNode) {
                 dom.appendChild(shadowNode);
             }
             else if (!shadowNode) {
                 dom.removeChild(domNode);
             }
             else if (this._changed(domNode, shadowNode) === true) {
-                this._listen(shadowNode);
                 dom.replaceChild(shadowNode, domNode);
             }
             else {
@@ -91,16 +93,15 @@ var Jam = (function () {
         var d1Attributes = d1.attributes;
         var d2Attributes = d2.attributes;
         if (d1Attributes && d2Attributes) {
-            for (var i = 0; i < Math.max(d1Attributes.length, d2Attributes.length); i++) {
+            if (d1Attributes.length !== d2Attributes.length) {
+                console.log('length mismatch');
+                return true;
+            }
+            for (var i = 0; i < d1Attributes.length; i++) {
                 var d1Attribute = d1Attributes[i];
-                if (!d1Attribute) {
-                    return true;
-                }
                 var d2Attribute = d2Attributes.getNamedItem(d1Attribute.name);
-                if (!d2Attribute) {
-                    return true;
-                }
                 if (d1Attribute.value !== d2Attribute.value) {
+                    console.log('value mismatch', d1Attribute.value, d2Attribute.value);
                     return true;
                 }
             }
@@ -176,4 +177,5 @@ var Jam = (function () {
     };
     return Jam;
 }());
+module.exports = Jam;
 //# sourceMappingURL=jam.js.map

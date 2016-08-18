@@ -1,5 +1,7 @@
 'use strict';
 
+export = Jam;
+
 type TypedObject = {
    [key: string]: any
 }
@@ -70,7 +72,8 @@ class Jam {
       const renderedTemplate = template.replace(/\n/g, '')
                                .replace(interpolate, "' + this.data.$1 + '") 
                                .replace(escape, "' + this._escape(this.data.$1) + '") 
-                               .replace(evaluate, "'; $1 str += '"); 
+                               .replace(evaluate, "'; $1 str += '")
+                               .replace(/this.data.\s/g, 'this.data.'); 
       f += "str +='" + renderedTemplate + "';\n";
       f += "return str;\n";
 
@@ -87,13 +90,14 @@ class Jam {
       for (let i = 0; i < Math.max(domNodesArray.length, shadowNodesArray.length); i++) {
          const domNode: Node = domNodesArray[i];
          const shadowNode: Node = shadowNodesArray[i];
-         if (!domNode) {
+         if (shadowNode) {
             this._listen(shadowNode);
+         }
+         if (!domNode) {
             dom.appendChild(shadowNode);
          } else if (!shadowNode) {
             dom.removeChild(domNode);
          } else if (this._changed(<Element>domNode, <Element>shadowNode) === true) { 
-            this._listen(shadowNode);
             dom.replaceChild(shadowNode, domNode);
          } else {
             this._renderDom(domNode, domNode.childNodes, shadowNode.childNodes);
@@ -115,16 +119,15 @@ class Jam {
       const d1Attributes: NamedNodeMap = d1.attributes;     
       const d2Attributes: NamedNodeMap = d2.attributes;
       if (d1Attributes && d2Attributes) {
-         for (let i = 0; i < Math.max(d1Attributes.length, d2Attributes.length); i++) {
+         if (d1Attributes.length !== d2Attributes.length) {
+            console.log('length mismatch');
+            return true;
+         }
+         for (let i = 0; i < d1Attributes.length; i++) {
             const d1Attribute: Attr = d1Attributes[i];
-            if (!d1Attribute) {
-               return true;
-            }
             const d2Attribute: Attr = d2Attributes.getNamedItem(d1Attribute.name);
-            if (!d2Attribute) {
-               return true;
-            }
             if (d1Attribute.value !== d2Attribute.value) {
+               console.log('value mismatch', d1Attribute.value, d2Attribute.value);
                return true;
             }
          }     
@@ -134,7 +137,7 @@ class Jam {
       } 
       if (!d1Attributes && d2Attributes) {
          return true;
-      } 
+      }
       return false;
    }
 

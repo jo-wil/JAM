@@ -13,10 +13,13 @@ QUnit.test('Jam', function(assert) {
 QUnit.test('_renderTemplate', function (assert) {
 
   var ts1 = `<h1> Good </h1>`;
-  var data1 = {};
 
-  assert.ok(Jam.prototype._renderTemplate(ts1, data1) === ts1, 'simple');
-   
+  assert.ok(Jam.prototype._renderTemplate(ts1) === ts1, 'simple');
+
+  var ts2 = `<h1> <%= header %> </h1>`;
+  var data2 = {header: 'Good'};
+  assert.ok(Jam.prototype._renderTemplate.call({data: data2}, ts2) === ts1, 'simple');
+  
 });
 
 QUnit.test('_merge', function (assert) {

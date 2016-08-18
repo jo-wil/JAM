@@ -48,7 +48,28 @@ var main = function () {
       }
    });
  
-   container.render(); 
+   //container.render(); 
+
+   var form = new Jam({
+      template: `
+         <form onsubmit="submit">
+            <input id="name"/>
+            <input type="submit"/>
+         </form>
+         <p> <%- name %> </p>
+      `,
+      data: {},
+      selector: '#container',
+      functions: {
+         submit: function (evt) {
+            evt.preventDefault();
+            console.log(evt);
+            this.update({name: document.querySelector('#name').value});
+         }
+      }
+   });
+
+   form.render();
 };
 
 window.addEventListener('load', main);
