@@ -24,7 +24,12 @@ class Jam {
       this._template = options.template; 
       this._data = options.data; 
       this._selector = options.selector;
-      this._functions = options.functions;
+      this._functions = {};
+      const keys = Object.keys(options.functions);
+      for (var i = 0; i < keys.length; i++) {
+         const key = keys[i];
+         this._functions[key] = options.functions[key].bind(this);
+      }
    }
 
    get data (): TypedObject {
@@ -120,14 +125,12 @@ class Jam {
       const d2Attributes: NamedNodeMap = d2.attributes;
       if (d1Attributes && d2Attributes) {
          if (d1Attributes.length !== d2Attributes.length) {
-            console.log('length mismatch');
             return true;
          }
          for (let i = 0; i < d1Attributes.length; i++) {
             const d1Attribute: Attr = d1Attributes[i];
             const d2Attribute: Attr = d2Attributes.getNamedItem(d1Attribute.name);
             if (d1Attribute.value !== d2Attribute.value) {
-               console.log('value mismatch', d1Attribute.value, d2Attribute.value);
                return true;
             }
          }     
@@ -152,7 +155,7 @@ class Jam {
             (<Element>node).removeAttribute(attribute.name);
             const evt = attribute.name.replace('on', '');
             const func = attribute.value;
-            node.addEventListener(evt, this._functions[func].bind(this), false);
+            node.addEventListener(evt, this._functions[func], false);
          }
       }
    }

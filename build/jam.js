@@ -4,7 +4,12 @@ var Jam = (function () {
         this._template = options.template;
         this._data = options.data;
         this._selector = options.selector;
-        this._functions = options.functions;
+        this._functions = {};
+        var keys = Object.keys(options.functions);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            this._functions[key] = options.functions[key].bind(this);
+        }
     }
     Object.defineProperty(Jam.prototype, "data", {
         get: function () {
@@ -94,14 +99,12 @@ var Jam = (function () {
         var d2Attributes = d2.attributes;
         if (d1Attributes && d2Attributes) {
             if (d1Attributes.length !== d2Attributes.length) {
-                console.log('length mismatch');
                 return true;
             }
             for (var i = 0; i < d1Attributes.length; i++) {
                 var d1Attribute = d1Attributes[i];
                 var d2Attribute = d2Attributes.getNamedItem(d1Attribute.name);
                 if (d1Attribute.value !== d2Attribute.value) {
-                    console.log('value mismatch', d1Attribute.value, d2Attribute.value);
                     return true;
                 }
             }
@@ -125,7 +128,7 @@ var Jam = (function () {
                 node.removeAttribute(attribute.name);
                 var evt = attribute.name.replace('on', '');
                 var func = attribute.value;
-                node.addEventListener(evt, this._functions[func].bind(this), false);
+                node.addEventListener(evt, this._functions[func], false);
             }
         }
     };
