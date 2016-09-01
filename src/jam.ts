@@ -73,24 +73,32 @@ class Jam {
      
       const interpolate: RegExp = /<%=([\s\S]+?)%>/g;
       const escape: RegExp = /<%-([\s\S]+?)%>/g;
+      const cleanEvaluate: RegExp = /<%([\s\S]+?)%>\s*<%([\s\S]+?)%>/g;
       const evaluate: RegExp = /<%([\s\S]+?)%>/g;
 
       let f: string = "";
       f += "var str = '';\n";   
+
+               
+      template = template.replace(/\n/g, '')
+                         .replace(interpolate, "' + this.data.$1 + '") 
+                         .replace(escape, "' + this._escape(this.data.$1) + '"); 
                      
-      const renderedTemplate = template.replace(/\n/g, '')
-                               .replace(interpolate, "' + this.data.$1 + '") 
-                               .replace(escape, "' + this._escape(this.data.$1) + '") 
-                               .replace(evaluate, "'; $1 str += '")
-                               .replace(/this.data.\s/g, 'this.data.'); 
-      f += "str +='" + renderedTemplate + "';\n";
+      while(cleanEvaluate.test(template)) {
+         template = template.replace(cleanEvaluate, "<% $1 $2 %>");
+      }      
+
+      template = template.replace(evaluate, "'; $1 str += '")
+                         .replace(/this.data.\s/g, 'this.data.'); 
+      
+      f += "str +='" + template + "';\n";
       f += "return str;\n";
 
       const func: any = new Function(f);
 
       const html: string = func.call(this);
 
-      return html; 
+      return html;
    }
 
    _renderDom (dom: Node, domNodes: NodeList, shadowNodes: NodeList): void {

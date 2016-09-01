@@ -47,15 +47,19 @@ var Jam = (function () {
     Jam.prototype._renderTemplate = function (template) {
         var interpolate = /<%=([\s\S]+?)%>/g;
         var escape = /<%-([\s\S]+?)%>/g;
+        var cleanEvaluate = /<%([\s\S]+?)%>\s*<%([\s\S]+?)%>/g;
         var evaluate = /<%([\s\S]+?)%>/g;
         var f = "";
         f += "var str = '';\n";
-        var renderedTemplate = template.replace(/\n/g, '')
+        template = template.replace(/\n/g, '')
             .replace(interpolate, "' + this.data.$1 + '")
-            .replace(escape, "' + this._escape(this.data.$1) + '")
-            .replace(evaluate, "'; $1 str += '")
+            .replace(escape, "' + this._escape(this.data.$1) + '");
+        while (cleanEvaluate.test(template)) {
+            template = template.replace(cleanEvaluate, "<% $1 $2 %>");
+        }
+        template = template.replace(evaluate, "'; $1 str += '")
             .replace(/this.data.\s/g, 'this.data.');
-        f += "str +='" + renderedTemplate + "';\n";
+        f += "str +='" + template + "';\n";
         f += "return str;\n";
         var func = new Function(f);
         var html = func.call(this);
