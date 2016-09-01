@@ -2,23 +2,27 @@
 
 export = Jam;
 
-type TypedObject = {
+type Data = {
    [key: string]: any
+}
+
+type Funcs = {
+   [key: string]: (evt: Event) => any
 }
 
 type Options = {
    template: string,
-   data: TypedObject,
+   data: Data,
    selector: string,
-   functions: TypedObject
+   functions: Funcs 
 }
 
 class Jam {
 
    private _template: string;
-   private _data: TypedObject;
+   private _data: Data;
    private _selector: string;
-   private _functions: TypedObject;
+   private _functions: Funcs;
 
    constructor(options: Options) {
       this._template = options.template; 
@@ -32,11 +36,11 @@ class Jam {
       }
    }
 
-   get data (): TypedObject {
+   get data (): Data {
       return this._data;
    }
 
-   get functions (): TypedObject {
+   get functions (): Funcs {
       return this._functions;
    }
 
@@ -44,7 +48,7 @@ class Jam {
       this._render();
    }
 
-   update (newData: TypedObject) : TypedObject {
+   update (newData: Data) : Data {
       this._data = this._merge(this._data, newData);
       this._render();
       return this._data;
@@ -181,8 +185,8 @@ class Jam {
       return escaped; 
    }
 
-   _merge (a: TypedObject, b: TypedObject) {
-      const c: TypedObject = {};
+   _merge (a: Data, b: Data): Data {
+      const c: Data = {};
       const aKeys = Object.keys(a);
       for (let i = 0; i < aKeys.length; i++) {
          const key = aKeys[i];
