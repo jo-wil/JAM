@@ -54,11 +54,17 @@ var main = function () {
       template: `
          <form onsubmit="submit">
             <input id="name"/>
+            <% for (var i = 0; i < 4; i++) { %>
+               <input id="rb<%= i %>"/>
+            <% } %>
             <input type="submit"/>
          </form>
+         <p> <%= name %> </p>
          <p> <%- name %> </p>
       `,
-      data: {},
+      data: {
+         name: 'Test Name'
+      },
       selector: '#container',
       functions: {
          submit: function (evt) {

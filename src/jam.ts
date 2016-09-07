@@ -24,7 +24,7 @@ class Jam {
    private _selector: string;
    private _functions: Funcs;
 
-   constructor(options: Options) {
+   public constructor (options: Options) {
       this._template = options.template; 
       this._data = options.data; 
       this._selector = options.selector;
@@ -36,25 +36,25 @@ class Jam {
       }
    }
 
-   get data (): Data {
+   public get data (): Data {
       return this._data;
    }
 
-   get functions (): Funcs {
+   public get functions (): Funcs {
       return this._functions;
    }
 
-   render (): void {
+   public render (): void {
       this._render();
    }
 
-   update (newData: Data) : Data {
+   public update (newData: Data) : Data {
       this._data = this._merge(this._data, newData);
       this._render();
       return this._data;
    }
 
-   _render (): void {
+   private _render (): void {
       const template: string = this._template; 
       const selector: string = this._selector;
       const dom: Node = document.querySelector(selector);
@@ -69,7 +69,7 @@ class Jam {
       this._renderDom(dom, dom.childNodes, shadow.childNodes);
    }
 
-   _renderTemplate (template: string): string {
+   private _renderTemplate (template: string): string {
      
       const interpolate: RegExp = /<%=([\s\S]+?)%>/g;
       const escape: RegExp = /<%-([\s\S]+?)%>/g;
@@ -101,7 +101,7 @@ class Jam {
       return html;
    }
 
-   _renderDom (dom: Node, domNodes: NodeList, shadowNodes: NodeList): void {
+   private _renderDom (dom: Node, domNodes: NodeList, shadowNodes: NodeList): void {
       const domNodesArray: Array<Node> = Array.prototype.slice.call(domNodes);
       const shadowNodesArray: Array<Node> = Array.prototype.slice.call(shadowNodes);
       for (let i = 0; i < Math.max(domNodesArray.length, shadowNodesArray.length); i++) {
@@ -122,7 +122,7 @@ class Jam {
       }
    }
 
-   _changed (d1: Element, d2: Element): boolean {
+   private _changed (d1: Element, d2: Element): boolean {
       if (d1.nodeType !== d2.nodeType) {
          return true;
       }
@@ -156,7 +156,7 @@ class Jam {
       return false;
    }
 
-   _listen(node: Node): void {
+   private _listen(node: Node): void {
       const attributes: NamedNodeMap = node.attributes;
       if (!attributes) {
          return;
@@ -172,7 +172,7 @@ class Jam {
       }
    }
 
-   _clean (node: Node): void {
+   private _clean (node: Node): void {
       for(let i = 0; i < node.childNodes.length; i++) {
          const child: Node = node.childNodes[i];
          if ((child.nodeType === 8) || 
@@ -186,14 +186,14 @@ class Jam {
       }
    }
 
-   _escape (html: string): string {
+   private _escape (html: string): string {
       const tmp: Element = document.createElement('div');
       tmp.appendChild(document.createTextNode(html));
       const escaped: string = tmp.innerHTML;
       return escaped; 
    }
 
-   _merge (a: Data, b: Data): Data {
+   private _merge (a: Data, b: Data): Data {
       const c: Data = {};
       const aKeys = Object.keys(a);
       for (let i = 0; i < aKeys.length; i++) {
