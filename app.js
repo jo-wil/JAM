@@ -35,14 +35,12 @@ var main = function () {
             }.bind(this), 1000);
          },
          toggle: function () {
-            console.log(this.data);
             if (this.data.toggle) {
                this.update({toggle: false});
             } else {
                this.update({toggle: true});
             }
             this.update({deep:{ one: 11}});
-            console.log(this.data);
          },
          echo: function (evt) {
             this.update({echo: evt.target.value});
