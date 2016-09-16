@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "./build/",
+        "outDir": "./",
         "target": "es5",
         "sourceMap": true,
         "noImplicitAny": true,

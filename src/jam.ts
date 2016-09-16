@@ -1,6 +1,6 @@
 'use strict';
 
-export = Jam;
+//export = Jam;
 
 type Data = {
    [key: string]: any
@@ -81,8 +81,8 @@ class Jam {
 
                
       template = template.replace(/\n/g, '')
-                         .replace(interpolate, "' + this.data.$1 + '") 
-                         .replace(escape, "' + this._escape(this.data.$1) + '"); 
+                         .replace(interpolate, "' + this.data.$1 || $1 + '") 
+                         .replace(escape, "' + this._escape(this.data.$1 || $1) + '"); 
                      
       while(cleanEvaluate.test(template)) {
          template = template.replace(cleanEvaluate, "<% $1 $2 %>");
@@ -93,6 +93,8 @@ class Jam {
       
       f += "str +='" + template + "';\n";
       f += "return str;\n";
+
+      console.log(f);
 
       const func: any = new Function(f);
 
