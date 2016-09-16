@@ -52,8 +52,8 @@ var Jam = (function () {
         var f = "";
         f += "var str = '';\n";
         template = template.replace(/\n/g, '')
-            .replace(interpolate, "' + this.data.$1 || $1 + '")
-            .replace(escape, "' + this._escape(this.data.$1 || $1) + '");
+            .replace(interpolate, "' + (function () { if (this.data.$1 === undefined) { return $1; } else { return this.data.$1; } }).call(this) + '")
+            .replace(escape, "' + this._escape((function () { if (this.data.$1 === undefined) { return $1; } else { return this.data.$1; } }).call(this)) + '");
         while (cleanEvaluate.test(template)) {
             template = template.replace(cleanEvaluate, "<% $1 $2 %>");
         }
@@ -61,7 +61,6 @@ var Jam = (function () {
             .replace(/this.data.\s/g, 'this.data.');
         f += "str +='" + template + "';\n";
         f += "return str;\n";
-        console.log(f);
         var func = new Function(f);
         var html = func.call(this);
         return html;

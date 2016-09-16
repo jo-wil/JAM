@@ -1,11 +1,10 @@
 'use strict';
 
 var main = function () {
-   
+  
    var container = new Jam({
       template:`
           <h2>JAM.js Demo App</h2>
-          <button onclick="timer">Start</button>
           <button onclick="toggle">Toggle</button>
           <p> <%- time %> </p>
           <p style="color:<%- color %>"> This text changes colors WOW! </p>
@@ -52,6 +51,7 @@ var main = function () {
    });
  
    container.render(); 
+   container.functions.timer();
 
    var form = new Jam({
       template: `

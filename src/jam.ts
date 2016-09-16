@@ -81,8 +81,10 @@ class Jam {
 
                
       template = template.replace(/\n/g, '')
-                         .replace(interpolate, "' + this.data.$1 || $1 + '") 
-                         .replace(escape, "' + this._escape(this.data.$1 || $1) + '"); 
+                         .replace(interpolate, 
+                         "' + (function () { if (this.data.$1 === undefined) { return $1; } else { return this.data.$1; } }).call(this) + '") 
+                         .replace(escape, 
+                         "' + this._escape((function () { if (this.data.$1 === undefined) { return $1; } else { return this.data.$1; } }).call(this)) + '"); 
                      
       while(cleanEvaluate.test(template)) {
          template = template.replace(cleanEvaluate, "<% $1 $2 %>");
@@ -93,8 +95,6 @@ class Jam {
       
       f += "str +='" + template + "';\n";
       f += "return str;\n";
-
-      console.log(f);
 
       const func: any = new Function(f);
 
